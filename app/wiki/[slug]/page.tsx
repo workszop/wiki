@@ -62,7 +62,9 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   const slugs = getAllSlugs();
-  const { html, toc } = await renderMarkdown(article.body, slugs);
+  // Strip a leading # h1 that duplicates the page title
+  const body = article.body.replace(/^\s*#\s+[^\n]*\n?/, '');
+  const { html, toc } = await renderMarkdown(body, slugs);
   const hasToc = toc.length >= 3;
 
   return (

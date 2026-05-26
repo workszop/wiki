@@ -889,12 +889,6 @@ mark {
   transform: translateY(-2px);
 }
 
-.wiki-card__logo {
-  margin-bottom: var(--space-4);
-  flex-shrink: 0;
-}
-
-.wiki-card__logo svg { display: block; }
 
 .wiki-card__title {
   font-family: var(--font-display);

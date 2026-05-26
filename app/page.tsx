@@ -3,57 +3,6 @@ import Link from 'next/link';
 
 type Props = { searchParams: Promise<{ sort?: string }> };
 
-// Deterministic color per article from Quantica palette
-const LOGO_COLORS = [
-  '#C41E54', // quantica-pink
-  '#7030A0', // violet-primary
-  '#00A37A', // success green
-  '#4F46E5', // indigo
-  '#FF4D9A', // rose-pink
-  '#FFC107', // amber
-];
-
-function ArticleLogo({ title }: { title: string }) {
-  const color = LOGO_COLORS[title.charCodeAt(0) % LOGO_COLORS.length];
-  const initials = title
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('');
-
-  return (
-    <svg
-      width="44"
-      height="44"
-      viewBox="0 0 44 44"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      {/* Outer wireframe square */}
-      <rect x="1" y="1" width="42" height="42" rx="10" stroke={color} strokeWidth="1.5" />
-      {/* Inner corner marks — wireframe aesthetic */}
-      <path d="M8 1.5 L1.5 1.5 L1.5 8" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
-      <path d="M36 1.5 L42.5 1.5 L42.5 8" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
-      <path d="M8 42.5 L1.5 42.5 L1.5 36" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
-      <path d="M36 42.5 L42.5 42.5 L42.5 36" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.4" />
-      {/* Monogram */}
-      <text
-        x="22"
-        y="28"
-        textAnchor="middle"
-        fontSize={initials.length > 1 ? '15' : '18'}
-        fontWeight="700"
-        fontFamily="Satoshi, Inter, system-ui, sans-serif"
-        fill={color}
-        letterSpacing="-0.5"
-      >
-        {initials}
-      </text>
-    </svg>
-  );
-}
-
 function extractPreview(body: string, maxLen = 160): string {
   return body
     .replace(/```[\s\S]*?```/g, '')
@@ -118,9 +67,6 @@ export default async function Home({ searchParams }: Props) {
           {sorted.map((a) => (
             <li key={a.slug}>
               <Link href={`/wiki/${a.slug}`} className="wiki-card">
-                <div className="wiki-card__logo">
-                  <ArticleLogo title={a.title} />
-                </div>
                 <div className="wiki-card__title">{a.title}</div>
                 <p className="wiki-card__preview">{extractPreview(a.body)}</p>
                 <div className="wiki-card__footer">
