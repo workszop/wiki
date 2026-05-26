@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "import": "node scripts/import-md.js"
   },
   "dependencies": {
     "better-sqlite3": "^11.0.0",
