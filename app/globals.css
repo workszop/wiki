@@ -824,6 +824,85 @@ mark {
   padding: 1px 4px;
 }
 
+/* ── Article grid (home page) ───────────────────────────────────────────────── */
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-5);
+}
+
+.wiki-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  transition:
+    box-shadow var(--dur-2) var(--ease-standard),
+    border-color var(--dur-2) var(--ease-standard),
+    transform var(--dur-2) var(--ease-standard);
+}
+.wiki-card:hover {
+  box-shadow: var(--shadow-pink-soft);
+  border-color: var(--border-brand);
+  transform: translateY(-2px);
+}
+
+.wiki-card__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-bold);
+  color: var(--fg-1);
+  line-height: var(--lh-h3);
+  margin-bottom: var(--space-3);
+  transition: color var(--dur-1) var(--ease-standard);
+}
+.wiki-card:hover .wiki-card__title {
+  color: var(--quantica-pink);
+}
+
+.wiki-card__preview {
+  flex: 1;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--fg-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wiki-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-1);
+}
+
+.wiki-card__date {
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  color: var(--fg-4);
+}
+
+.wiki-card__arrow {
+  font-size: var(--fs-caption);
+  color: var(--quantica-pink);
+  opacity: 0;
+  transition: opacity var(--dur-1) var(--ease-standard),
+              transform var(--dur-1) var(--ease-standard);
+  transform: translateX(-4px);
+}
+.wiki-card:hover .wiki-card__arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
 /* ── Editor ─────────────────────────────────────────────────────────────────── */
 .editor-title-input {
   width: 100%;
@@ -917,6 +996,7 @@ mark {
   .topbar { padding: 0 var(--space-5); }
   .article { padding: var(--space-7) var(--space-5) var(--space-9); }
   .wiki-page { padding: var(--space-7) var(--space-5) var(--space-9); }
+  .wiki-grid { grid-template-columns: 1fr; }
   .article-title { font-size: var(--fs-h2); }
   .site-footer__inner { flex-direction: column; gap: var(--space-3); text-align: center; }
 }
