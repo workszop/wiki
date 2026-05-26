@@ -824,6 +824,44 @@ mark {
   padding: 1px 4px;
 }
 
+/* ── Home page toolbar ──────────────────────────────────────────────────────── */
+.wiki-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-6);
+  gap: var(--space-4);
+}
+
+.wiki-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--bg-2);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+
+.wiki-sort__btn {
+  font-family: var(--font-sans);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--fg-3);
+  text-decoration: none;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  transition: background var(--dur-1) var(--ease-standard),
+              color var(--dur-1) var(--ease-standard);
+  white-space: nowrap;
+}
+.wiki-sort__btn:hover { color: var(--fg-1); }
+.wiki-sort__btn--active {
+  background: var(--bg-1);
+  color: var(--fg-1);
+  box-shadow: var(--shadow-xs);
+}
+
 /* ── Article grid (home page) ───────────────────────────────────────────────── */
 .wiki-grid {
   display: grid;
@@ -850,6 +888,13 @@ mark {
   border-color: var(--border-brand);
   transform: translateY(-2px);
 }
+
+.wiki-card__logo {
+  margin-bottom: var(--space-4);
+  flex-shrink: 0;
+}
+
+.wiki-card__logo svg { display: block; }
 
 .wiki-card__title {
   font-family: var(--font-display);
