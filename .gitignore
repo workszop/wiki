@@ -1,0 +1,6 @@
+.env
+nextjs/.env
+nextjs/.env.local
+nextjs/node_modules/
+nextjs/.next/
+nextjs/lib/__generated__/

@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_USER: wiki
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wiki"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wiki:
+    image: requarks/wiki:2.5
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: wiki
+      DB_USER: wiki
+      DB_PASS: ${DB_PASSWORD}
+    volumes:
+      - ./wiki/config.yml:/wiki/config.yml:ro
+    expose:
+      - "3000"
+
+  nextjs:
+    build:
+      context: ./nextjs
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - wiki
+      - db
+    environment:
+      NODE_ENV: production
+      WIKIJS_GRAPHQL_URL: http://wiki:3000/graphql
+      WIKIJS_SERVICE_TOKEN: ${WIKIJS_SERVICE_TOKEN}
+      DATABASE_URL: postgresql://wiki:${DB_PASSWORD}@db:5432/wiki
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_FROM: ${SMTP_FROM}
+      NEXT_PUBLIC_WIKI_BASE_URL: ${PUBLIC_URL}
+    expose:
+      - "3001"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - wiki
+      - nextjs
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
