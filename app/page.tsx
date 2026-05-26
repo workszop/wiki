@@ -3,6 +3,21 @@ import Link from 'next/link';
 
 type Props = { searchParams: Promise<{ sort?: string }> };
 
+const CARD_COLORS = [
+  '#C41E54', // quantica-pink
+  '#7030A0', // violet
+  '#00A37A', // green
+  '#4F46E5', // indigo
+  '#FF4D9A', // rose
+  '#FFC107', // amber
+  '#FF20A1', // electric-pink
+  '#4F1F75', // violet-deep
+];
+
+function cardColor(title: string): string {
+  return CARD_COLORS[title.charCodeAt(0) % CARD_COLORS.length];
+}
+
 function extractPreview(body: string, maxLen = 160): string {
   return body
     .replace(/```[\s\S]*?```/g, '')
@@ -64,24 +79,57 @@ export default async function Home({ searchParams }: Props) {
         </div>
       ) : (
         <ul className="wiki-grid" style={{ listStyle: 'none', padding: 0 }}>
-          {sorted.map((a) => (
-            <li key={a.slug}>
-              <Link href={`/wiki/${a.slug}`} className="wiki-card">
-                <div className="wiki-card__title">{a.title}</div>
-                <p className="wiki-card__preview">{extractPreview(a.body)}</p>
-                <div className="wiki-card__footer">
-                  <span className="wiki-card__date">
-                    {new Date(a.updated_at).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
-                  </span>
-                  <span className="wiki-card__arrow">Read →</span>
-                </div>
-              </Link>
-            </li>
-          ))}
+          {sorted.map((a, i) => {
+            const color = cardColor(a.title);
+            const num = String(i + 1).padStart(2, '0');
+            const date = new Date(a.updated_at).toLocaleDateString('en-GB', {
+              day: '2-digit',
+              month: 'short',
+              year: 'numeric',
+            });
+
+            if (i === 0) {
+              return (
+                <li key={a.slug}>
+                  <Link
+                    href={`/wiki/${a.slug}`}
+                    className="wiki-card wiki-card--hero"
+                  >
+                    <div className="wiki-card__body">
+                      <span className="wiki-card__eyebrow">Featured · {date}</span>
+                      <div className="wiki-card__title">{a.title}</div>
+                      <p className="wiki-card__preview">{extractPreview(a.body, 240)}</p>
+                      <div className="wiki-card__footer">
+                        <span className="wiki-card__date">{num}</span>
+                        <span className="wiki-card__arrow">Read article →</span>
+                      </div>
+                    </div>
+                    <div className="wiki-card__hero-num" aria-hidden="true">
+                      {num}
+                    </div>
+                  </Link>
+                </li>
+              );
+            }
+
+            return (
+              <li key={a.slug}>
+                <Link
+                  href={`/wiki/${a.slug}`}
+                  className="wiki-card"
+                  style={{ '--card-accent': color } as React.CSSProperties}
+                >
+                  <span className="wiki-card__index" aria-hidden="true">{num}</span>
+                  <div className="wiki-card__title">{a.title}</div>
+                  <p className="wiki-card__preview">{extractPreview(a.body)}</p>
+                  <div className="wiki-card__footer">
+                    <span className="wiki-card__date">{date}</span>
+                    <span className="wiki-card__arrow">Read →</span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>

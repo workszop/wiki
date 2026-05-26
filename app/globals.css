@@ -865,30 +865,125 @@ mark {
 /* ── Article grid (home page) ───────────────────────────────────────────────── */
 .wiki-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-5);
 }
 
+/* Hero card (first item) spans all columns */
+.wiki-grid li:first-child {
+  grid-column: 1 / -1;
+}
+
+/* ── Base card ─────────────────────────────────────── */
 .wiki-card {
   display: flex;
   flex-direction: column;
   background: var(--bg-1);
   border: 1px solid var(--border-1);
+  border-top: 3px solid var(--card-accent, var(--border-2));
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   text-decoration: none;
   box-shadow: var(--shadow-xs);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
   transition:
     box-shadow var(--dur-2) var(--ease-standard),
-    border-color var(--dur-2) var(--ease-standard),
     transform var(--dur-2) var(--ease-standard);
 }
 .wiki-card:hover {
-  box-shadow: var(--shadow-pink-soft);
-  border-color: var(--border-brand);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
 }
 
+/* ── Hero card ─────────────────────────────────────── */
+.wiki-card--hero {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-9);
+  min-height: 200px;
+  padding: var(--space-8) var(--space-9);
+  background: linear-gradient(135deg, var(--quantica-pink) 0%, var(--violet-primary) 100%);
+  border: none;
+}
+.wiki-card--hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 85% 40%, rgba(255,255,255,0.07) 0%, transparent 55%),
+    radial-gradient(circle at 15% 85%, rgba(255,255,255,0.04) 0%, transparent 40%);
+  pointer-events: none;
+}
+.wiki-card--hero:hover {
+  box-shadow: var(--shadow-pink);
+  transform: translateY(-3px);
+}
+
+.wiki-card--hero .wiki-card__body { flex: 1; min-width: 0; }
+
+.wiki-card--hero .wiki-card__eyebrow {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: var(--space-3);
+}
+
+.wiki-card--hero .wiki-card__title {
+  font-size: var(--fs-h2);
+  color: #fff;
+  margin-bottom: var(--space-4);
+}
+.wiki-card--hero:hover .wiki-card__title { color: #fff; }
+
+.wiki-card--hero .wiki-card__preview {
+  color: rgba(255,255,255,0.72);
+  font-size: var(--fs-body-lg);
+  -webkit-line-clamp: 2;
+}
+
+.wiki-card--hero .wiki-card__footer {
+  border-top-color: rgba(255,255,255,0.18);
+  margin-top: var(--space-6);
+}
+
+.wiki-card--hero .wiki-card__date { color: rgba(255,255,255,0.55); }
+
+.wiki-card--hero .wiki-card__arrow {
+  color: rgba(255,255,255,0.9);
+  opacity: 1;
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  transform: none;
+}
+.wiki-card--hero:hover .wiki-card__arrow { transform: translateX(4px); }
+
+/* Big decorative number on hero */
+.wiki-card__hero-num {
+  font-family: var(--font-mono);
+  font-size: 120px;
+  font-weight: var(--fw-black);
+  line-height: 1;
+  color: rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  user-select: none;
+  letter-spacing: -6px;
+}
+
+/* ── Regular card elements ─────────────────────────── */
+.wiki-card__index {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-4);
+  letter-spacing: 0.05em;
+}
 
 .wiki-card__title {
   font-family: var(--font-display);
@@ -900,7 +995,7 @@ mark {
   transition: color var(--dur-1) var(--ease-standard);
 }
 .wiki-card:hover .wiki-card__title {
-  color: var(--quantica-pink);
+  color: var(--card-accent, var(--quantica-pink));
 }
 
 .wiki-card__preview {
@@ -931,7 +1026,7 @@ mark {
 
 .wiki-card__arrow {
   font-size: var(--fs-caption);
-  color: var(--quantica-pink);
+  color: var(--card-accent, var(--quantica-pink));
   opacity: 0;
   transition: opacity var(--dur-1) var(--ease-standard),
               transform var(--dur-1) var(--ease-standard);
@@ -1031,11 +1126,17 @@ mark {
   .article--with-toc { margin-left: 0; }
 }
 
+@media (max-width: 1024px) {
+  .wiki-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 760px) {
   .topbar { padding: 0 var(--space-5); }
   .article { padding: var(--space-7) var(--space-5) var(--space-9); }
   .wiki-page { padding: var(--space-7) var(--space-5) var(--space-9); }
   .wiki-grid { grid-template-columns: 1fr; }
+  .wiki-card--hero { flex-direction: column; gap: 0; min-height: auto; }
+  .wiki-card__hero-num { display: none; }
   .article-title { font-size: var(--fs-h2); }
   .site-footer__inner { flex-direction: column; gap: var(--space-3); text-align: center; }
 }
