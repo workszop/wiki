@@ -76,6 +76,14 @@ export default async function LandingPage() {
             Szukaj
           </button>
         </form>
+        {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+          <p className="mt-4 text-xs text-blue-100">
+            Konto demo: <code className="rounded bg-white/10 px-1.5 py-0.5">demo@local</code>
+            {" / "}
+            <code className="rounded bg-white/10 px-1.5 py-0.5">demo</code>
+            {" — "}wybierz strategię „Konto demo" przy logowaniu
+          </p>
+        )}
       </section>
 
       {/* Spaces */}

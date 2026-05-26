@@ -4,3 +4,5 @@ nextjs/.env.local
 nextjs/node_modules/
 nextjs/.next/
 nextjs/lib/__generated__/
+scripts/node_modules/
+scripts/package-lock.json

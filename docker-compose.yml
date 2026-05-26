@@ -57,6 +57,30 @@ services:
     expose:
       - "3001"
 
+  wiki-seed:
+    image: node:20-alpine
+    depends_on:
+      wiki:
+        condition: service_started
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: wiki
+      DB_USER: wiki
+      DB_PASSWORD: ${DB_PASSWORD}
+      DEMO_EMAIL: demo@local
+      DEMO_PASSWORD: demo
+      DEMO_NAME: Demo User
+      DEMO_GROUP: Readers
+    volumes:
+      - ./scripts:/seed-src:ro
+    working_dir: /seed
+    command: >
+      sh -c "cp -r /seed-src/. /seed/ &&
+             npm install --no-audit --no-fund --silent &&
+             node seed-demo-user.js"
+    restart: "no"
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
