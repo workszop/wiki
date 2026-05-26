@@ -17,6 +17,10 @@ uploads:
 
 auth:
   strategies:
+    - key: local
+      title: Konto demo
+      enabled: true
+      selfRegistration: false  # only preseeded demo account
     - key: oidc
       title: Microsoft 365
       enabled: true
