@@ -1,8 +1,17 @@
+# deps
+node_modules/
+
+# next
+.next/
+out/
+
+# data (SQLite file)
+data/
+
+# env
 .env
-nextjs/.env
-nextjs/.env.local
-nextjs/node_modules/
-nextjs/.next/
-nextjs/lib/__generated__/
-scripts/node_modules/
-scripts/package-lock.json
+.env.local
+
+# misc
+.DS_Store
+*.pem

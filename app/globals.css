@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Rendered article body */
+.wiki-body {
+  @apply prose prose-gray max-w-none;
+}
+
+/* Override prose link colour so wiki-link/dead-link win */
+.wiki-body a {
+  @apply no-underline;
+}
+
+.wiki-body a.wiki-link {
+  @apply text-blue-600 underline;
+}
+
+.wiki-body a.dead-link {
+  @apply text-red-500 decoration-dashed underline;
+}
+
+/* Search snippet highlight */
+mark {
+  @apply bg-yellow-100 text-yellow-900 rounded px-0.5;
+}
