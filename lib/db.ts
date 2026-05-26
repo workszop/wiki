@@ -21,6 +21,12 @@ export function getDb(): Database.Database {
 }
 
 function initSchema(db: Database.Database) {
+  // Add category column if it doesn't exist (idempotent migration)
+  const cols = (db.prepare('PRAGMA table_info(articles)').all() as any[]).map((c: any) => c.name);
+  if (!cols.includes('category')) {
+    db.exec("ALTER TABLE articles ADD COLUMN category TEXT NOT NULL DEFAULT 'General'");
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS articles (
       slug        TEXT PRIMARY KEY,
@@ -68,6 +74,7 @@ export interface Article {
   slug: string;
   title: string;
   body: string;
+  category: string;
   created_at: string;
   updated_at: string;
 }

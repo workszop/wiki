@@ -824,6 +824,97 @@ mark {
   padding: 1px 4px;
 }
 
+/* ── Home page layout (wider wrapper + 2-col with sidebar) ─────────────────── */
+.wiki-home-wrapper {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--space-7) var(--space-11);
+  width: 100%;
+}
+
+.wiki-home-layout {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: var(--space-7);
+  align-items: start;
+}
+
+/* ── Category sidebar ───────────────────────────────────────────────────────── */
+.wiki-sidebar {
+  position: sticky;
+  top: calc(60px + var(--space-5));
+  background: var(--bg-1);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+}
+
+.wiki-sidebar__header {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-1);
+  font-family: var(--font-mono);
+  font-size: var(--fs-caption);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-brand);
+  font-weight: var(--fw-medium);
+  background: var(--magenta-tint);
+}
+
+.wiki-sidebar__list {
+  list-style: none;
+  padding: var(--space-2) 0;
+  margin: 0;
+}
+
+.wiki-sidebar__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-5);
+  text-decoration: none;
+  font-size: var(--fs-body);
+  color: var(--fg-2);
+  gap: var(--space-2);
+  transition: background var(--dur-1) var(--ease-standard),
+              color var(--dur-1) var(--ease-standard);
+}
+.wiki-sidebar__link:hover {
+  background: var(--bg-2);
+  color: var(--fg-1);
+}
+.wiki-sidebar__link--active {
+  background: var(--magenta-tint);
+  color: var(--quantica-pink);
+  font-weight: var(--fw-medium);
+}
+
+.wiki-sidebar__label { flex: 1; }
+
+.wiki-sidebar__count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: var(--fw-medium);
+  color: var(--fg-4);
+  background: var(--bg-2);
+  border-radius: var(--radius-pill);
+  padding: 2px 7px;
+  flex-shrink: 0;
+  transition: background var(--dur-1) var(--ease-standard),
+              color var(--dur-1) var(--ease-standard);
+}
+.wiki-sidebar__link--active .wiki-sidebar__count {
+  background: var(--quantica-pink);
+  color: #fff;
+}
+
+.wiki-sidebar__divider {
+  height: 1px;
+  background: var(--border-1);
+  margin: var(--space-2) 0;
+}
+
 /* ── Home page toolbar ──────────────────────────────────────────────────────── */
 .wiki-toolbar {
   display: flex;
@@ -1126,7 +1217,13 @@ mark {
   .article--with-toc { margin-left: 0; }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
+  .wiki-home-layout { grid-template-columns: 1fr; }
+  .wiki-sidebar { position: static; display: flex; flex-wrap: wrap; gap: 0; }
+  .wiki-sidebar__header { width: 100%; }
+  .wiki-sidebar__list { display: flex; flex-wrap: wrap; padding: var(--space-2); gap: 4px; }
+  .wiki-sidebar__link { padding: 4px 12px; border-radius: var(--radius-pill); font-size: var(--fs-caption); }
+  .wiki-sidebar__divider { display: none; }
   .wiki-grid { grid-template-columns: repeat(2, 1fr); }
 }
 

@@ -1,17 +1,21 @@
 import { getDb } from '@/lib/db';
 import Link from 'next/link';
 
-type Props = { searchParams: Promise<{ sort?: string }> };
+type Props = { searchParams: Promise<{ sort?: string; cat?: string }> };
 
 const CARD_COLORS = [
-  '#C41E54', // quantica-pink
-  '#7030A0', // violet
-  '#00A37A', // green
-  '#4F46E5', // indigo
-  '#FF4D9A', // rose
-  '#FFC107', // amber
-  '#FF20A1', // electric-pink
-  '#4F1F75', // violet-deep
+  '#C41E54', '#7030A0', '#00A37A', '#4F46E5',
+  '#FF4D9A', '#FFC107', '#FF20A1', '#4F1F75',
+];
+
+// Fixed display order for categories in the sidebar
+const CATEGORY_ORDER = [
+  'Foundations',
+  'Retrieval & RAG',
+  'Agents & Apps',
+  'Practice',
+  'Wiki Docs',
+  'General',
 ];
 
 function cardColor(title: string): string {
@@ -36,102 +40,150 @@ function extractPreview(body: string, maxLen = 160): string {
 }
 
 export default async function Home({ searchParams }: Props) {
-  const { sort = 'date' } = await searchParams;
+  const { sort = 'date', cat } = await searchParams;
 
   const db = getDb();
-  const articles = db
-    .prepare('SELECT slug, title, body, updated_at FROM articles')
-    .all() as { slug: string; title: string; body: string; updated_at: string }[];
+  const all = db
+    .prepare('SELECT slug, title, body, category, updated_at FROM articles')
+    .all() as { slug: string; title: string; body: string; category: string; updated_at: string }[];
 
-  const sorted = [...articles].sort((a, b) => {
-    if (sort === 'title') return a.title.localeCompare(b.title);
-    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-  });
+  // Build category counts
+  const counts: Record<string, number> = {};
+  for (const a of all) {
+    counts[a.category] = (counts[a.category] ?? 0) + 1;
+  }
+
+  // Categories sorted by fixed order, then alphabetically for unknowns
+  const categories = [
+    ...CATEGORY_ORDER.filter((c) => counts[c] !== undefined),
+    ...Object.keys(counts).filter((c) => !CATEGORY_ORDER.includes(c)).sort(),
+  ];
+
+  // Filter + sort
+  const filtered = all
+    .filter((a) => !cat || a.category === cat)
+    .sort((a, b) => {
+      if (sort === 'title') return a.title.localeCompare(b.title);
+      return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+    });
+
+  // Helpers to build href preserving other params
+  function sortHref(s: string) {
+    const p = new URLSearchParams();
+    p.set('sort', s);
+    if (cat) p.set('cat', cat);
+    return `/?${p}`;
+  }
+  function catHref(c?: string) {
+    const p = new URLSearchParams();
+    if (sort !== 'date') p.set('sort', sort);
+    if (c) p.set('cat', c);
+    return p.toString() ? `/?${p}` : '/';
+  }
 
   return (
-    <div className="wiki-page">
+    <div className="wiki-home-wrapper">
       <div className="wiki-toolbar">
         <h1 className="wiki-page-title" style={{ margin: 0 }}>
-          All Articles
+          {cat ? cat : 'All Articles'}
+          {cat && (
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--fs-caption)', color: 'var(--fg-4)', marginLeft: 12, fontWeight: 400 }}>
+              {filtered.length} article{filtered.length !== 1 ? 's' : ''}
+            </span>
+          )}
         </h1>
         <nav className="wiki-sort" aria-label="Sort articles">
-          <Link
-            href="/?sort=date"
-            className={`wiki-sort__btn${sort !== 'title' ? ' wiki-sort__btn--active' : ''}`}
-          >
+          <Link href={sortHref('date')} className={`wiki-sort__btn${sort !== 'title' ? ' wiki-sort__btn--active' : ''}`}>
             Recent
           </Link>
-          <Link
-            href="/?sort=title"
-            className={`wiki-sort__btn${sort === 'title' ? ' wiki-sort__btn--active' : ''}`}
-          >
+          <Link href={sortHref('title')} className={`wiki-sort__btn${sort === 'title' ? ' wiki-sort__btn--active' : ''}`}>
             A → Z
           </Link>
         </nav>
       </div>
 
-      {sorted.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '64px 0', color: 'var(--fg-3)' }}>
-          <p style={{ marginBottom: 16 }}>No articles yet.</p>
-          <Link href="/new" className="btn-primary">
-            Create the first one →
-          </Link>
-        </div>
-      ) : (
-        <ul className="wiki-grid" style={{ listStyle: 'none', padding: 0 }}>
-          {sorted.map((a, i) => {
-            const color = cardColor(a.title);
-            const num = String(i + 1).padStart(2, '0');
-            const date = new Date(a.updated_at).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-            });
+      <div className="wiki-home-layout">
+        {/* ── Articles grid ── */}
+        <div>
+          {filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '64px 0', color: 'var(--fg-3)' }}>
+              <p style={{ marginBottom: 16 }}>No articles in this category yet.</p>
+              <Link href={catHref()} style={{ color: 'var(--quantica-pink)', textDecoration: 'underline' }}>
+                View all articles
+              </Link>
+            </div>
+          ) : (
+            <ul className="wiki-grid" style={{ listStyle: 'none', padding: 0 }}>
+              {filtered.map((a, i) => {
+                const color = cardColor(a.title);
+                const num = String(i + 1).padStart(2, '0');
+                const date = new Date(a.updated_at).toLocaleDateString('en-GB', {
+                  day: '2-digit', month: 'short', year: 'numeric',
+                });
 
-            if (i === 0) {
-              return (
-                <li key={a.slug}>
-                  <Link
-                    href={`/wiki/${a.slug}`}
-                    className="wiki-card wiki-card--hero"
-                  >
-                    <div className="wiki-card__body">
-                      <span className="wiki-card__eyebrow">Featured · {date}</span>
+                if (i === 0) {
+                  return (
+                    <li key={a.slug}>
+                      <Link href={`/wiki/${a.slug}`} className="wiki-card wiki-card--hero">
+                        <div className="wiki-card__body">
+                          <span className="wiki-card__eyebrow">{a.category} · {date}</span>
+                          <div className="wiki-card__title">{a.title}</div>
+                          <p className="wiki-card__preview">{extractPreview(a.body, 240)}</p>
+                          <div className="wiki-card__footer">
+                            <span className="wiki-card__date">{num}</span>
+                            <span className="wiki-card__arrow">Read article →</span>
+                          </div>
+                        </div>
+                        <div className="wiki-card__hero-num" aria-hidden="true">{num}</div>
+                      </Link>
+                    </li>
+                  );
+                }
+
+                return (
+                  <li key={a.slug}>
+                    <Link
+                      href={`/wiki/${a.slug}`}
+                      className="wiki-card"
+                      style={{ '--card-accent': color } as React.CSSProperties}
+                    >
+                      <span className="wiki-card__index" aria-hidden="true">{num}</span>
                       <div className="wiki-card__title">{a.title}</div>
-                      <p className="wiki-card__preview">{extractPreview(a.body, 240)}</p>
+                      <p className="wiki-card__preview">{extractPreview(a.body)}</p>
                       <div className="wiki-card__footer">
-                        <span className="wiki-card__date">{num}</span>
-                        <span className="wiki-card__arrow">Read article →</span>
+                        <span className="wiki-card__date">{date}</span>
+                        <span className="wiki-card__arrow">Read →</span>
                       </div>
-                    </div>
-                    <div className="wiki-card__hero-num" aria-hidden="true">
-                      {num}
-                    </div>
-                  </Link>
-                </li>
-              );
-            }
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
 
-            return (
-              <li key={a.slug}>
-                <Link
-                  href={`/wiki/${a.slug}`}
-                  className="wiki-card"
-                  style={{ '--card-accent': color } as React.CSSProperties}
-                >
-                  <span className="wiki-card__index" aria-hidden="true">{num}</span>
-                  <div className="wiki-card__title">{a.title}</div>
-                  <p className="wiki-card__preview">{extractPreview(a.body)}</p>
-                  <div className="wiki-card__footer">
-                    <span className="wiki-card__date">{date}</span>
-                    <span className="wiki-card__arrow">Read →</span>
-                  </div>
+        {/* ── Category sidebar ── */}
+        <aside className="wiki-sidebar" aria-label="Filter by category">
+          <div className="wiki-sidebar__header">Categories</div>
+          <ul className="wiki-sidebar__list">
+            <li>
+              <Link href={catHref()} className={`wiki-sidebar__link${!cat ? ' wiki-sidebar__link--active' : ''}`}>
+                <span className="wiki-sidebar__label">All Articles</span>
+                <span className="wiki-sidebar__count">{all.length}</span>
+              </Link>
+            </li>
+            <li className="wiki-sidebar__divider" role="separator" />
+            {categories.map((c) => (
+              <li key={c}>
+                <Link href={catHref(c)} className={`wiki-sidebar__link${cat === c ? ' wiki-sidebar__link--active' : ''}`}>
+                  <span className="wiki-sidebar__label">{c}</span>
+                  <span className="wiki-sidebar__count">{counts[c]}</span>
                 </Link>
               </li>
-            );
-          })}
-        </ul>
-      )}
+            ))}
+          </ul>
+        </aside>
+      </div>
     </div>
   );
 }
