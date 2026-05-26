@@ -8,26 +8,24 @@ export default function Home() {
     .all() as { slug: string; title: string; updated_at: string }[];
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">All Articles</h1>
+    <div className="wiki-page">
+      <h1 className="wiki-page-title">All Articles</h1>
+
       {articles.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <p className="mb-4">No articles yet.</p>
-          <Link href="/new" className="text-blue-600 underline hover:text-blue-700">
+        <div style={{ textAlign: 'center', padding: '64px 0', color: 'var(--fg-3)' }}>
+          <p style={{ marginBottom: 16 }}>No articles yet.</p>
+          <Link href="/new" className="btn-primary">
             Create the first one →
           </Link>
         </div>
       ) : (
-        <ul className="divide-y divide-gray-100 bg-white rounded-lg border border-gray-200">
+        <ul className="wiki-article-list">
           {articles.map((a) => (
-            <li key={a.slug} className="px-4 py-3 flex items-center gap-3 hover:bg-gray-50">
-              <Link
-                href={`/wiki/${a.slug}`}
-                className="text-blue-600 hover:underline font-medium flex-1"
-              >
+            <li key={a.slug} className="wiki-article-item">
+              <Link href={`/wiki/${a.slug}`} className="wiki-article-link">
                 {a.title}
               </Link>
-              <span className="text-xs text-gray-400 shrink-0">
+              <span className="wiki-article-date">
                 {new Date(a.updated_at).toLocaleDateString()}
               </span>
             </li>

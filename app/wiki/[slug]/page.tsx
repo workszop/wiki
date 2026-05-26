@@ -3,6 +3,7 @@ import { renderMarkdown } from '@/lib/render';
 import { getAllSlugs } from '@/lib/search';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import type { TocItem } from '@/lib/render';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -24,15 +25,35 @@ export default async function ArticlePage({ params }: Props) {
 
   if (!article) {
     return (
-      <div className="text-center py-20">
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">Article not found</h1>
-        <p className="text-gray-500 mb-6">
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded font-mono text-sm">{slug}</code>{' '}
+      <div className="wiki-page" style={{ textAlign: 'center', paddingTop: 80 }}>
+        <h1
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'var(--fs-h2)',
+            fontWeight: 'var(--fw-bold)',
+            color: 'var(--fg-1)',
+            marginBottom: 12,
+          }}
+        >
+          Article not found
+        </h1>
+        <p style={{ color: 'var(--fg-3)', marginBottom: 24 }}>
+          <code
+            style={{
+              fontFamily: 'var(--font-mono)',
+              background: 'var(--magenta-tint)',
+              color: 'var(--quantica-pink)',
+              padding: '2px 8px',
+              borderRadius: 4,
+            }}
+          >
+            {slug}
+          </code>{' '}
           doesn&apos;t exist yet.
         </p>
         <Link
           href={`/new?title=${encodeURIComponent(slug.replace(/-/g, ' '))}`}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          className="btn-primary"
         >
           Create this article →
         </Link>
@@ -41,33 +62,52 @@ export default async function ArticlePage({ params }: Props) {
   }
 
   const slugs = getAllSlugs();
-  const html = await renderMarkdown(article.body, slugs);
+  const { html, toc } = await renderMarkdown(article.body, slugs);
+  const hasToc = toc.length >= 3;
 
   return (
-    <article>
-      <div className="flex items-start justify-between mb-6 gap-4">
-        <h1 className="text-3xl font-bold text-gray-900">{article.title}</h1>
-        <div className="flex gap-2 shrink-0">
-          <Link
-            href={`/wiki/${slug}/history`}
-            className="text-sm border border-gray-300 px-3 py-1.5 rounded hover:bg-gray-50 text-gray-600"
-          >
-            History
-          </Link>
-          <Link
-            href={`/wiki/${slug}/edit`}
-            className="text-sm border border-gray-300 px-3 py-1.5 rounded hover:bg-gray-50 text-gray-600"
-          >
-            Edit
-          </Link>
+    <>
+      {hasToc && <TocSidebar toc={toc} />}
+      <article className={`article${hasToc ? ' article--with-toc' : ''}`}>
+        <div className="article-header">
+          <h1 className="article-title">{article.title}</h1>
+          <div className="article-actions">
+            <Link href={`/wiki/${slug}/history`} className="article-action-link">
+              History
+            </Link>
+            <Link href={`/wiki/${slug}/edit`} className="article-action-link">
+              Edit
+            </Link>
+          </div>
         </div>
-      </div>
 
-      <div className="wiki-body" dangerouslySetInnerHTML={{ __html: html }} />
+        <div className="article__body" dangerouslySetInnerHTML={{ __html: html }} />
 
-      <p className="mt-10 pt-4 border-t border-gray-100 text-xs text-gray-400">
-        Last updated: {new Date(article.updated_at).toLocaleString()}
-      </p>
-    </article>
+        <p className="article-meta">
+          Last updated: {new Date(article.updated_at).toLocaleString()}
+        </p>
+      </article>
+    </>
+  );
+}
+
+function TocSidebar({ toc }: { toc: TocItem[] }) {
+  return (
+    <nav className="toc" aria-label="Table of contents">
+      <div className="toc__label type-eyebrow">Contents</div>
+      <ol className="toc__list">
+        {toc.map((item, i) => (
+          <li
+            key={item.id}
+            className={`toc__item toc__item--h${item.level}`}
+          >
+            <a href={`#${item.id}`} className="toc__link">
+              <span className="toc__num">{String(i + 1).padStart(2, '0')}</span>
+              <span className="toc__text">{item.text}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }

@@ -51,38 +51,33 @@ export default function Editor({ slug, initialTitle, initialBody, isNew }: Edito
 
   return (
     <div>
-      <div className="mb-4">
+      <div style={{ marginBottom: 'var(--space-5)' }}>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Article title"
-          className="w-full text-2xl font-bold border-b border-gray-300 pb-2 focus:outline-none focus:border-blue-400"
+          className="editor-title-input"
           autoFocus={isNew}
         />
         {isNew && title && (
-          <p className="text-xs text-gray-400 mt-1">
-            URL:{' '}
-            <span className="font-mono">
-              /wiki/
-              {title
-                .toLowerCase()
-                .replace(/\s+/g, '-')
-                .replace(/[^\w-]/g, '')
-                .replace(/-+/g, '-')
-                .replace(/^-|-$/g, '')}
-            </span>
+          <p className="editor-slug-hint">
+            URL: /wiki/
+            {title
+              .toLowerCase()
+              .replace(/\s+/g, '-')
+              .replace(/[^\w-]/g, '')
+              .replace(/-+/g, '-')
+              .replace(/^-|-$/g, '')}
           </p>
         )}
       </div>
 
-      <div className="border border-gray-300 rounded">
-        <div className="flex border-b border-gray-200 bg-gray-50">
+      <div className="editor-wrap">
+        <div className="editor-tabs">
           <button
             onClick={() => setTab('write')}
-            className={`px-4 py-2 text-sm rounded-tl ${
-              tab === 'write' ? 'bg-white font-medium text-gray-900 border-b-2 border-blue-500 -mb-px' : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`editor-tab${tab === 'write' ? ' editor-tab--active' : ''}`}
           >
             Write
           </button>
@@ -91,9 +86,7 @@ export default function Editor({ slug, initialTitle, initialBody, isNew }: Edito
               setTab('preview');
               loadPreview();
             }}
-            className={`px-4 py-2 text-sm ${
-              tab === 'preview' ? 'bg-white font-medium text-gray-900 border-b-2 border-blue-500 -mb-px' : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`editor-tab${tab === 'preview' ? ' editor-tab--active' : ''}`}
           >
             Preview
           </button>
@@ -103,33 +96,32 @@ export default function Editor({ slug, initialTitle, initialBody, isNew }: Edito
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            className="w-full h-96 p-4 font-mono text-sm resize-y focus:outline-none"
+            className="editor-textarea"
             placeholder="Write your article in Markdown. Use [[Article Title]] to link to other wiki articles."
           />
         ) : (
           <div
-            className="wiki-body p-4 min-h-96"
+            className="article__body editor-preview"
             dangerouslySetInnerHTML={{
-              __html: preview || '<p class="text-gray-400 italic">Loading preview…</p>',
+              __html:
+                preview ||
+                '<p style="color:var(--fg-4);font-style:italic">Loading preview…</p>',
             }}
           />
         )}
       </div>
 
-      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+      {error && <p className="editor-error">{error}</p>}
 
-      <div className="flex gap-3 mt-4">
+      <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-5)' }}>
         <button
           onClick={save}
           disabled={saving || !title.trim() || !body.trim()}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="btn-primary"
         >
           {saving ? 'Saving…' : 'Save'}
         </button>
-        <button
-          onClick={() => router.back()}
-          className="border border-gray-300 px-4 py-2 rounded hover:bg-gray-50 text-gray-600"
-        >
+        <button onClick={() => router.back()} className="btn-secondary">
           Cancel
         </button>
       </div>

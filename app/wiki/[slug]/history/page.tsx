@@ -29,9 +29,9 @@ export default async function HistoryPage({ params, searchParams }: Props) {
 
   if (!article) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        Article not found.{' '}
-        <Link href="/" className="text-blue-600 underline">
+      <div className="wiki-page" style={{ textAlign: 'center' }}>
+        <p style={{ color: 'var(--fg-3)', marginBottom: 12 }}>Article not found.</p>
+        <Link href="/" className="btn-secondary" style={{ display: 'inline-flex' }}>
           ← Home
         </Link>
       </div>
@@ -45,9 +45,22 @@ export default async function HistoryPage({ params, searchParams }: Props) {
   const selected = rev ? revisions.find((r) => r.id === Number(rev)) : null;
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-6 text-sm text-gray-500">
-        <Link href={`/wiki/${slug}`} className="text-blue-600 hover:underline font-medium">
+    <div className="wiki-page">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-2)',
+          marginBottom: 'var(--space-7)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'var(--fs-caption)',
+          color: 'var(--fg-3)',
+        }}
+      >
+        <Link
+          href={`/wiki/${slug}`}
+          style={{ color: 'var(--quantica-pink)', textDecoration: 'none', fontWeight: 500 }}
+        >
           ← {article.title}
         </Link>
         <span>/</span>
@@ -55,32 +68,70 @@ export default async function HistoryPage({ params, searchParams }: Props) {
       </div>
 
       {selected && (
-        <div className="mb-8">
-          <h2 className="font-semibold text-gray-900 mb-1">
+        <div style={{ marginBottom: 'var(--space-8)' }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 'var(--fs-h3)',
+              fontWeight: 'var(--fw-medium)',
+              color: 'var(--fg-1)',
+              marginBottom: 4,
+            }}
+          >
             Revision from {new Date(selected.saved_at).toLocaleString()} vs. current
           </h2>
-          <p className="text-xs text-gray-500 mb-3">
+          <p
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--fs-caption)',
+              color: 'var(--fg-4)',
+              marginBottom: 'var(--space-3)',
+            }}
+          >
             Red = old version · Green = current version
           </p>
           <DiffView oldText={selected.body} newText={article.body} />
         </div>
       )}
 
-      <h2 className="font-semibold text-gray-900 mb-3">Revisions</h2>
+      <h2
+        style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: 'var(--fs-h3)',
+          fontWeight: 'var(--fw-medium)',
+          color: 'var(--fg-1)',
+          marginBottom: 'var(--space-3)',
+        }}
+      >
+        Revisions
+      </h2>
       {revisions.length === 0 ? (
-        <p className="text-gray-500 text-sm">No previous revisions yet.</p>
+        <p style={{ color: 'var(--fg-4)', fontFamily: 'var(--font-mono)', fontSize: 'var(--fs-caption)' }}>
+          No previous revisions yet.
+        </p>
       ) : (
-        <ul className="divide-y divide-gray-100 bg-white border border-gray-200 rounded-lg">
+        <ul className="wiki-article-list">
           {revisions.map((r) => (
-            <li key={r.id} className="px-4 py-3 flex items-center gap-4">
-              <span className="text-sm text-gray-700">
+            <li key={r.id} className="wiki-article-item" style={{ gap: 'var(--space-5)' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--fs-caption)',
+                  color: 'var(--fg-2)',
+                  flex: 1,
+                }}
+              >
                 {new Date(r.saved_at).toLocaleString()}
               </span>
               <Link
                 href={`/wiki/${slug}/history?rev=${r.id}`}
-                className={`text-sm text-blue-600 hover:underline ${
-                  Number(rev) === r.id ? 'font-semibold' : ''
-                }`}
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 'var(--fs-caption)',
+                  color: 'var(--quantica-pink)',
+                  textDecoration: 'none',
+                  fontWeight: Number(rev) === r.id ? 700 : 400,
+                }}
               >
                 {Number(rev) === r.id ? 'Viewing diff' : 'View diff'}
               </Link>

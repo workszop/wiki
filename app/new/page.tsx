@@ -11,8 +11,8 @@ export default async function NewPage({ searchParams }: Props) {
   const slug = title ? slugify(title) : '__new__';
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">New Article</h1>
+    <div className="wiki-page">
+      <h1 className="wiki-page-title">New Article</h1>
       <Editor
         slug={slug}
         initialTitle={title.replace(/-/g, ' ')}

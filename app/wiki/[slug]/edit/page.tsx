@@ -23,9 +23,9 @@ export default async function EditPage({ params }: Props) {
 
   if (!article) {
     return (
-      <div className="text-center py-20 text-gray-500">
-        <p>Article not found.</p>
-        <Link href="/" className="text-blue-600 underline mt-2 inline-block">
+      <div className="wiki-page" style={{ textAlign: 'center' }}>
+        <p style={{ color: 'var(--fg-3)', marginBottom: 12 }}>Article not found.</p>
+        <Link href="/" className="btn-secondary" style={{ display: 'inline-flex' }}>
           ← Home
         </Link>
       </div>
@@ -33,12 +33,25 @@ export default async function EditPage({ params }: Props) {
   }
 
   return (
-    <div>
-      <div className="mb-4 text-sm text-gray-500">
-        <Link href={`/wiki/${slug}`} className="hover:text-gray-700">
+    <div className="wiki-page">
+      <div
+        style={{
+          marginBottom: 'var(--space-5)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-2)',
+          fontFamily: 'var(--font-mono)',
+          fontSize: 'var(--fs-caption)',
+          color: 'var(--fg-3)',
+        }}
+      >
+        <Link
+          href={`/wiki/${slug}`}
+          style={{ color: 'var(--quantica-pink)', textDecoration: 'none' }}
+        >
           ← {article.title}
         </Link>
-        <span className="mx-2">·</span>
+        <span>·</span>
         <span>Editing</span>
       </div>
       <Editor slug={article.slug} initialTitle={article.title} initialBody={article.body} />

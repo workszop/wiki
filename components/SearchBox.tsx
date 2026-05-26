@@ -15,13 +15,13 @@ function Inner() {
   }
 
   return (
-    <form onSubmit={submit} className="flex-1 max-w-lg">
+    <form onSubmit={submit} style={{ width: '100%', maxWidth: 480 }}>
       <input
         ref={ref}
         type="search"
         defaultValue={params.get('q') ?? ''}
         placeholder="Search articles…"
-        className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="topbar-search-input"
       />
     </form>
   );
@@ -29,7 +29,7 @@ function Inner() {
 
 export default function SearchBox() {
   return (
-    <Suspense fallback={<div className="flex-1 max-w-lg" />}>
+    <Suspense fallback={<div style={{ flex: 1, maxWidth: 480 }} />}>
       <Inner />
     </Suspense>
   );

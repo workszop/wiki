@@ -7,6 +7,6 @@ export async function POST(req: NextRequest) {
   if (!body) return NextResponse.json({ html: '' });
 
   const slugs = getAllSlugs();
-  const html = await renderMarkdown(body, slugs);
+  const { html } = await renderMarkdown(body, slugs);
   return NextResponse.json({ html });
 }
