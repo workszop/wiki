@@ -105,14 +105,6 @@ const stmtUpdate = db.prepare(`
   UPDATE articles SET title = ?, body = ?, category = ?, updated_at = ?
   WHERE slug = ?
 `);
-const stmtFtsDelete = db.prepare(`
-  INSERT INTO articles_fts(articles_fts, rowid, slug, title, body)
-  SELECT 'delete', rowid, slug, title, body FROM articles WHERE slug = ?
-`);
-const stmtFtsInsert = db.prepare(`
-  INSERT INTO articles_fts(rowid, slug, title, body)
-  SELECT rowid, slug, title, body FROM articles WHERE slug = ?
-`);
 
 // ── Import ────────────────────────────────────────────────────────────────────
 const category = flags.cat ?? 'General';
@@ -140,14 +132,11 @@ const runImport = db.transaction(() => {
     }
 
     if (exists) {
-      stmtFtsDelete.run(slug);
       stmtUpdate.run(title, body, category, ts, slug);
-      stmtFtsInsert.run(slug);
       console.log(`  ↻ update  ${slug}  →  "${title}"`);
       updated++;
     } else {
       stmtInsert.run(slug, title, body, category, ts, ts);
-      stmtFtsInsert.run(slug);
       console.log(`  + create  ${slug}  →  "${title}"`);
       created++;
     }

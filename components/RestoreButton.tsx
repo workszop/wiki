@@ -20,11 +20,7 @@ export default function RestoreButton({ slug, revisionId }: { slug: string; revi
   }
 
   return (
-    <button
-      onClick={restore}
-      disabled={loading}
-      className="text-sm text-gray-500 hover:text-gray-800 underline disabled:opacity-50"
-    >
+    <button onClick={restore} disabled={loading} className="btn-restore">
       {loading ? 'Restoring…' : 'Restore'}
     </button>
   );

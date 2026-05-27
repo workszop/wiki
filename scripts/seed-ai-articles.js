@@ -11,10 +11,6 @@ const insert = db.prepare(`
   INSERT OR REPLACE INTO articles (slug, title, body, created_at, updated_at)
   VALUES (?, ?, ?, ?, ?)
 `);
-const ftsInsert = db.prepare(`
-  INSERT OR REPLACE INTO articles_fts(rowid, slug, title, body)
-  SELECT rowid, slug, title, body FROM articles WHERE slug = ?
-`);
 
 const articles = [
   {
@@ -642,7 +638,6 @@ const seed = db.transaction(() => {
   for (const a of articles) {
     const ts = new Date(a.date).toISOString().replace('T', ' ').slice(0, 19);
     insert.run(a.slug, a.title, a.body, ts, ts);
-    ftsInsert.run(a.slug);
     console.log('  +', a.title);
   }
 });

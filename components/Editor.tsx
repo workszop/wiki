@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { slugify } from '@/lib/render';
 
 interface EditorProps {
   slug: string;
@@ -62,13 +63,7 @@ export default function Editor({ slug, initialTitle, initialBody, isNew }: Edito
         />
         {isNew && title && (
           <p className="editor-slug-hint">
-            URL: /wiki/
-            {title
-              .toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^\w-]/g, '')
-              .replace(/-+/g, '-')
-              .replace(/^-|-$/g, '')}
+            URL: /wiki/{slugify(title)}
           </p>
         )}
       </div>

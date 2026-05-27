@@ -3,6 +3,7 @@ import DiffView from '@/components/DiffView';
 import RestoreButton from '@/components/RestoreButton';
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -27,16 +28,7 @@ export default async function HistoryPage({ params, searchParams }: Props) {
     | { slug: string; title: string; body: string }
     | undefined;
 
-  if (!article) {
-    return (
-      <div className="wiki-page" style={{ textAlign: 'center' }}>
-        <p style={{ color: 'var(--fg-3)', marginBottom: 12 }}>Article not found.</p>
-        <Link href="/" className="btn-secondary" style={{ display: 'inline-flex' }}>
-          ← Home
-        </Link>
-      </div>
-    );
-  }
+  if (!article) notFound();
 
   const revisions = db
     .prepare('SELECT * FROM article_revisions WHERE slug = ? ORDER BY saved_at DESC')
